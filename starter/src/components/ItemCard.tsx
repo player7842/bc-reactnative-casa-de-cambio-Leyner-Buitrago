@@ -11,13 +11,14 @@ import {
 import { Currency, Trend } from '../types';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 
+
 interface ItemCardProps {
   item: Currency;
   onPress: (item: Currency) => void;
 }
 
 /** Valores >= 100 sin decimales y con punto de miles; los menores, con 2 decimales */
-function formatCOP(value: number): string {
+export function formatCOP(value: number): string {
   if (value >= 100) {
     return '$ ' + Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   }

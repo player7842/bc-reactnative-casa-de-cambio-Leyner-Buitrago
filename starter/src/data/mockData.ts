@@ -16,3 +16,8 @@ export const CURRENCIES: Currency[] = [
   { id: '11', code: 'ARS', name: 'Peso argentino', country: 'Argentina', imageUri: flag('ar'), buyRate: 2.8, sellRate: 3.6, trend: 'baja' },
   { id: '12', code: 'CNY', name: 'Yuan chino', country: 'China', imageUri: flag('cn'), buyRate: 540, sellRate: 575, trend: 'sube' },
 ];
+
+// Divisas favoritas (estáticas por ahora): la pestaña Favoritas las lista
+export const FAVORITES: Currency[] = CURRENCIES.filter((c) =>
+  ['1', '2', '7', '12'].includes(c.id),
+);
