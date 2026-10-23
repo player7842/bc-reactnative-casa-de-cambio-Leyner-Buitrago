@@ -6,18 +6,22 @@ import {
   Pressable,
   StyleSheet,
   StyleProp,
-  ViewStyle,
   TextStyle,
 } from 'react-native';
 import { Currency, Trend } from '../types';
+import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 
 interface ItemCardProps {
   item: Currency;
   onPress: (item: Currency) => void;
 }
 
+/** Valores >= 100 sin decimales y con punto de miles; los menores, con 2 decimales */
 function formatCOP(value: number): string {
-  return '$ ' + Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  if (value >= 100) {
+    return '$ ' + Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  return '$ ' + value.toFixed(2).replace('.', ',');
 }
 
 export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
@@ -25,37 +29,30 @@ export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={() => onPress(item)}
+      accessibilityRole="button"
+      accessibilityLabel={item.name}
     >
-      <Image source={{ uri: item.imageUri }} style={styles.cardImage} resizeMode="cover" />
-
-      <View style={styles.cardBody}>
-        <View style={styles.titleRow}>
-          <View style={styles.titleColumn}>
-            <Text style={styles.cardName}>{item.name}</Text>
-            <Text style={styles.cardSubtitle}>{item.country}</Text>
-          </View>
-          <View style={styles.codeBadge}>
-            <Text style={styles.codeText}>{item.code}</Text>
-          </View>
+      <View style={styles.topRow}>
+        <Image source={{ uri: item.imageUri }} style={styles.flag} resizeMode="cover" />
+        <View style={styles.titleColumn}>
+          <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.fieldText}>{item.country}</Text>
         </View>
-
-        <View style={styles.ratesRow}>
-          <View style={styles.rateBox}>
-            <Text style={styles.rateLabel}>Compramos</Text>
-            <Text style={styles.rateValue}>{formatCOP(item.buyRate)}</Text>
-          </View>
-          <View style={styles.rateBox}>
-            <Text style={styles.rateLabel}>Vendemos</Text>
-            <Text style={styles.rateValue}>{formatCOP(item.sellRate)}</Text>
-          </View>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{item.code}</Text>
         </View>
+      </View>
 
-        <View style={styles.footerRow}>
-          <View style={[styles.trendBadge, TREND_BADGE[item.trend]]}>
-            <Text style={[styles.trendText, TREND_TEXT[item.trend]]}>{TREND_LABEL[item.trend]}</Text>
-          </View>
-          <Text style={styles.actionText}>Toca para cotizar →</Text>
+      <View style={styles.ratesRow}>
+        <View style={styles.rateBox}>
+          <Text style={styles.rateLabel}>Compramos</Text>
+          <Text style={styles.rateValue}>{formatCOP(item.buyRate)}</Text>
         </View>
+        <View style={styles.rateBox}>
+          <Text style={styles.rateLabel}>Vendemos</Text>
+          <Text style={styles.rateValue}>{formatCOP(item.sellRate)}</Text>
+        </View>
+        <Text style={[styles.trendText, TREND_TEXT[item.trend]]}>{TREND_LABEL[item.trend]}</Text>
       </View>
     </Pressable>
   );
@@ -63,61 +60,91 @@ export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#161b22',
-    borderRadius: 12,
-    marginBottom: 12,
-    overflow: 'hidden',
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.md,
+    padding: SPACING.base,
+    marginHorizontal: SPACING.base,
+    marginVertical: SPACING.xs,
     borderWidth: 1,
-    borderColor: '#30363d',
+    borderColor: COLORS.border,
+    gap: SPACING.md,
   },
-  cardPressed: { backgroundColor: '#21262d', opacity: 0.9 },
-  cardImage: { width: '100%', height: 140 },
-  cardBody: { padding: 16, gap: 12 },
-  titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  titleColumn: { flex: 1, gap: 2 },
-  cardName: { fontSize: 18, fontWeight: 'bold', color: '#ffffff' },
-  cardSubtitle: { fontSize: 14, color: '#8b949e' },
-  codeBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-    backgroundColor: '#e3b34133',
-    marginLeft: 12,
+  cardPressed: {
+    backgroundColor: COLORS.surfaceAlt,
   },
-  codeText: { fontSize: 14, fontWeight: 'bold', color: '#e3b341', letterSpacing: 1 },
-  ratesRow: { flexDirection: 'row', gap: 12 },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+  },
+  flag: {
+    width: 48,
+    height: 32,
+    borderRadius: RADIUS.sm,
+  },
+  titleColumn: {
+    flex: 1,
+  },
+  itemName: {
+    fontSize: TYPOGRAPHY.size.md,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    color: COLORS.textPrimary,
+  },
+  fieldText: {
+    fontSize: TYPOGRAPHY.size.sm,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  badge: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 3,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.accentDim,
+  },
+  badgeText: {
+    fontSize: TYPOGRAPHY.size.xs,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.accent,
+    letterSpacing: 1,
+  },
+  ratesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
   rateBox: {
     flex: 1,
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: '#0d1117',
+    padding: SPACING.sm,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.background,
     borderWidth: 1,
-    borderColor: '#30363d',
+    borderColor: COLORS.border,
   },
-  rateLabel: { fontSize: 12, color: '#8b949e', marginBottom: 2 },
-  rateValue: { fontSize: 17, fontWeight: '600', color: '#e6edf3' },
-  footerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  trendBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
-  trendText: { fontSize: 12, fontWeight: '600' },
-  trendUp: { backgroundColor: '#3fb95033' },
-  trendDown: { backgroundColor: '#f8514933' },
-  trendFlat: { backgroundColor: '#8b949e33' },
-  trendUpText: { color: '#3fb950' },
-  trendDownText: { color: '#f85149' },
-  trendFlatText: { color: '#8b949e' },
-  actionText: { fontSize: 13, color: '#58a6ff' },
+  rateLabel: {
+    fontSize: TYPOGRAPHY.size.xs,
+    color: COLORS.textSecondary,
+    marginBottom: 2,
+  },
+  rateValue: {
+    fontSize: TYPOGRAPHY.size.base,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    color: COLORS.textPrimary,
+  },
+  trendText: {
+    fontSize: TYPOGRAPHY.size.sm,
+    fontWeight: TYPOGRAPHY.weight.semibold,
+    minWidth: 70,
+    textAlign: 'right',
+  },
+  trendUp: { color: COLORS.success },
+  trendDown: { color: COLORS.error },
+  trendFlat: { color: COLORS.textSecondary },
 });
 
-const TREND_BADGE: Record<Trend, StyleProp<ViewStyle>> = {
+const TREND_TEXT: Record<Trend, StyleProp<TextStyle>> = {
   sube: styles.trendUp,
   baja: styles.trendDown,
   estable: styles.trendFlat,
-};
-
-const TREND_TEXT: Record<Trend, StyleProp<TextStyle>> = {
-  sube: styles.trendUpText,
-  baja: styles.trendDownText,
-  estable: styles.trendFlatText,
 };
 
 const TREND_LABEL: Record<Trend, string> = {
