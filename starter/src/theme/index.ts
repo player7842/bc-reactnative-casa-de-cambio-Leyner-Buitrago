@@ -9,6 +9,8 @@ export const COLORS = {
   textMuted: '#6e7681',
   accent: '#e3b341',
   accentDim: '#e3b34133',
+// Color del tab bar activo 
+  primary: '#61DAFB',
   success: '#3fb950',
   warning: '#f0883e',
   error: '#f85149',
