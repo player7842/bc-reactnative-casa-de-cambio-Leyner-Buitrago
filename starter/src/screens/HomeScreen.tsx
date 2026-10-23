@@ -25,7 +25,7 @@ export function HomeScreen(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#0d1117" />
+      <StatusBar barStyle="light-content" />
 
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{DOMAIN_TITLE}</Text>
