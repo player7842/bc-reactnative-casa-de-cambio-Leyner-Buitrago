@@ -15,6 +15,8 @@ se irán agregando en las siguientes semanas.
 **HomeScreen:** título con el contador de resultados, un buscador y una lista de 12 tarjetas.
 Cada tarjeta muestra la bandera, el nombre, el país, el código, los precios de compra y venta y
 la tendencia. Si la búsqueda no encuentra nada, aparece un mensaje de "sin resultados".
+<img width="738" height="1600" alt="WhatsApp Image 2026-10-22 at 10 31 01 PM" src="https://github.com/user-attachments/assets/62121060-df5c-47d0-a63a-5b418c883ace" />
+
 
 ## Decisiones de diseño
 
