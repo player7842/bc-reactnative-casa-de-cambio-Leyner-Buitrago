@@ -38,6 +38,9 @@ importers:
       react-native-screens:
         specifier: 4.30.0
         version: 4.30.0(react-native@0.88.0(@babel/core@7.29.7(supports-color@8.1.1))(@types/react@19.2.17)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
+      zustand:
+        specifier: 5.0.14
+        version: 5.0.14(@types/react@19.2.17)(react@19.3.0)(use-sync-external-store@1.7.0(react@19.3.0))
     devDependencies:
       '@babel/core':
         specifier: 7.29.7
@@ -2215,6 +2218,24 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
+  zustand@5.0.14:
+    resolution: {integrity: sha512-/8tAspM5LMPr28b3fwLYrtdj77ECpfZviaP75CMTnwO8ISyaE4GDIG/9rDDYq/cH9D2Xw2A2RXglLInmVBQB/g==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+
 snapshots:
 
   2g@1.0.1(typescript@6.0.3):
@@ -2952,7 +2973,7 @@ snapshots:
       metro-resolver: 0.87.1
       metro-runtime: 0.87.1
       metro-source-map: 0.87.1(supports-color@8.1.1)
-      metro-symbolicate: 0.87.1
+      metro-symbolicate: 0.87.1(supports-color@8.1.1)
       metro-transform-plugins: 0.87.1(supports-color@8.1.1)
       metro-transform-worker: 0.87.1(supports-color@8.1.1)
     transitivePeerDependencies:
@@ -4075,7 +4096,7 @@ snapshots:
       '@babel/types': 7.29.8
       flow-enums-runtime: 0.0.6
       invariant: 2.2.4
-      metro-symbolicate: 0.87.1
+      metro-symbolicate: 0.87.1(supports-color@8.1.1)
       nullthrows: 1.1.1
       ob1: 0.87.1
       source-map: 0.5.7
@@ -4083,7 +4104,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  metro-symbolicate@0.87.1:
+  metro-symbolicate@0.87.1(supports-color@8.1.1):
     dependencies:
       flow-enums-runtime: 0.0.6
       invariant: 2.2.4
@@ -4091,6 +4112,8 @@ snapshots:
       nullthrows: 1.1.1
       source-map: 0.5.7
       vlq: 1.0.1
+    transitivePeerDependencies:
+      - supports-color
 
   metro-transform-plugins@0.87.1(supports-color@8.1.1):
     dependencies:
@@ -4152,7 +4175,7 @@ snapshots:
       metro-resolver: 0.87.1
       metro-runtime: 0.87.1
       metro-source-map: 0.87.1(supports-color@8.1.1)
-      metro-symbolicate: 0.87.1
+      metro-symbolicate: 0.87.1(supports-color@8.1.1)
       metro-transform-plugins: 0.87.1(supports-color@8.1.1)
       metro-transform-worker: 0.87.1(supports-color@8.1.1)
       mime-types: 3.0.2
@@ -4702,3 +4725,9 @@ snapshots:
       yargs-parser: 21.1.1
 
   zod@3.25.76: {}
+
+  zustand@5.0.14(@types/react@19.2.17)(react@19.3.0)(use-sync-external-store@1.7.0(react@19.3.0)):
+    optionalDependencies:
+      '@types/react': 19.2.17
+      react: 19.3.0
+      use-sync-external-store: 1.7.0(react@19.3.0)
