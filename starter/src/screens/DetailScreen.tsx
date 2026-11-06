@@ -5,9 +5,10 @@ import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 import { formatCOP } from '../components/ItemCard';
+import { useSavedStore } from '../stores/savedStore';
+import type { Currency } from '../types';
 import type { HomeStackParamList } from '../navigation/types';
 
-// Tipos del route (params que llegan) y del navigation (para goBack)
 type DetailRouteProp = RouteProp<HomeStackParamList, 'HomeDetail'>;
 type DetailNavigationProp = NativeStackNavigationProp<HomeStackParamList, 'HomeDetail'>;
 
@@ -22,7 +23,22 @@ export function DetailScreen(): React.JSX.Element {
   const navigation = useNavigation<DetailNavigationProp>();
   const { id, name, code, country, imageUri, buyRate, sellRate, trend } = route.params;
 
-  // Margen de la casa de cambio: diferencia entre lo que vende y lo que compra
+  // Divisa completa armada con los params (es lo que se guarda en el store)
+  const currency: Currency = { id, name, code, country, imageUri, buyRate, sellRate, trend };
+
+  // Selectores del store: isSaved se recalcula cada vez que cambia la lista de guardadas
+  const isSaved = useSavedStore((state) => state.isItemSaved(id));
+  const addItem = useSavedStore((state) => state.addItem);
+  const removeItem = useSavedStore((state) => state.removeItem);
+
+  function handleToggleSave(): void {
+    if (isSaved) {
+      removeItem(id);
+    } else {
+      addItem(currency);
+    }
+  }
+
   const spread = sellRate - buyRate;
 
   return (
@@ -58,7 +74,20 @@ export function DetailScreen(): React.JSX.Element {
       </View>
 
       <Pressable
-        style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
+        style={({ pressed }) => [
+          styles.saveButton,
+          isSaved && styles.saveButtonActive,
+          pressed && styles.buttonPressed,
+        ]}
+        onPress={handleToggleSave}
+      >
+        <Text style={[styles.saveButtonText, isSaved && styles.saveButtonTextActive]}>
+          {isSaved ? 'Quitar de guardadas' : 'Guardar divisa'}
+        </Text>
+      </Pressable>
+
+      <Pressable
+        style={({ pressed }) => [styles.backButton, pressed && styles.buttonPressed]}
         onPress={() => navigation.goBack()}
       >
         <Text style={styles.backButtonText}>← Volver a la lista</Text>
@@ -68,19 +97,9 @@ export function DetailScreen(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  content: {
-    padding: SPACING.base,
-    gap: SPACING.md,
-  },
-  flag: {
-    width: '100%',
-    height: 160,
-    borderRadius: RADIUS.lg,
-  },
+  container: { flex: 1, backgroundColor: COLORS.background },
+  content: { padding: SPACING.base, gap: SPACING.md },
+  flag: { width: '100%', height: 160, borderRadius: RADIUS.lg },
   name: {
     fontSize: TYPOGRAPHY.size.xl,
     fontWeight: TYPOGRAPHY.weight.bold,
@@ -113,21 +132,33 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  fieldValue: {
-    fontSize: TYPOGRAPHY.size.md,
-    color: COLORS.textPrimary,
-  },
-  backButton: {
+  fieldValue: { fontSize: TYPOGRAPHY.size.md, color: COLORS.textPrimary },
+  saveButton: {
     marginTop: SPACING.sm,
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.primary,
+  },
+  saveButtonActive: {
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+  },
+  saveButtonText: {
+    fontSize: TYPOGRAPHY.size.base,
+    fontWeight: TYPOGRAPHY.weight.bold,
+    color: COLORS.background,
+  },
+  saveButtonTextActive: { color: COLORS.primary },
+  buttonPressed: { opacity: 0.8 },
+  backButton: {
     alignItems: 'center',
     paddingVertical: SPACING.md,
     borderRadius: RADIUS.md,
     borderWidth: 1,
     borderColor: COLORS.border,
     backgroundColor: COLORS.surface,
-  },
-  backButtonPressed: {
-    backgroundColor: COLORS.surfaceAlt,
   },
   backButtonText: {
     fontSize: TYPOGRAPHY.size.base,
