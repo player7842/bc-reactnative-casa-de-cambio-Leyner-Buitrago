@@ -8,9 +8,10 @@ import {
   StyleProp,
   TextStyle,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Currency, Trend } from '../types';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
-
+import { useSavedStore } from '../stores/savedStore';
 
 interface ItemCardProps {
   item: Currency;
@@ -26,6 +27,19 @@ export function formatCOP(value: number): string {
 }
 
 export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
+  // Selectores específicos: la tarjeta solo se re-renderiza si cambia SU estado de guardado
+  const isSaved = useSavedStore((state) => state.isItemSaved(item.id));
+  const addItem = useSavedStore((state) => state.addItem);
+  const removeItem = useSavedStore((state) => state.removeItem);
+
+  function handleToggleSave(): void {
+    if (isSaved) {
+      removeItem(item.id);
+    } else {
+      addItem(item);
+    }
+  }
+
   return (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
@@ -42,6 +56,18 @@ export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{item.code}</Text>
         </View>
+        <Pressable
+          onPress={handleToggleSave}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={isSaved ? 'Quitar de guardadas' : 'Guardar divisa'}
+        >
+          <Ionicons
+            name={isSaved ? 'bookmark' : 'bookmark-outline'}
+            size={24}
+            color={isSaved ? COLORS.primary : COLORS.textSecondary}
+          />
+        </Pressable>
       </View>
 
       <View style={styles.ratesRow}>
