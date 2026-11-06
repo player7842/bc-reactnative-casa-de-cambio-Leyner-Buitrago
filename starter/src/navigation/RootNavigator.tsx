@@ -5,7 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { HomeScreen } from '../screens/HomeScreen';
 import { DetailScreen } from '../screens/DetailScreen';
-import { FavoritesScreen } from '../screens/FavoritesScreen';
+import { SavedScreen } from '../screens/SavedScreen';
+import { useSavedStore } from '../stores/savedStore';
 import { COLORS, TYPOGRAPHY } from '../theme';
 import type { HomeStackParamList, RootTabParamList } from './types';
 
@@ -32,7 +33,6 @@ function HomeStackNavigator(): React.JSX.Element {
       <HomeStack.Screen
         name="HomeDetail"
         component={DetailScreen}
-        // El título del header sale de los params que se enviaron al navegar
         options={({ route }) => ({ title: route.params.name })}
       />
     </HomeStack.Navigator>
@@ -45,6 +45,9 @@ function HomeStackNavigator(): React.JSX.Element {
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 export function RootNavigator(): React.JSX.Element {
+  // Selector específico: solo se re-renderiza cuando cambia la CANTIDAD de guardadas
+  const savedCount = useSavedStore((state) => state.items.length);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -55,8 +58,8 @@ export function RootNavigator(): React.JSX.Element {
                 ? 'swap-horizontal'
                 : 'swap-horizontal-outline'
               : focused
-                ? 'heart'
-                : 'heart-outline';
+                ? 'bookmark'
+                : 'bookmark-outline';
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: COLORS.primary,
@@ -71,16 +74,24 @@ export function RootNavigator(): React.JSX.Element {
         sceneStyle: { backgroundColor: COLORS.background },
       })}
     >
-      {/* La pestaña Home usa el Stack interno, que ya trae su propio header */}
       <Tab.Screen
         name="Home"
         component={HomeStackNavigator}
         options={{ tabBarLabel: 'Divisas', headerShown: false }}
       />
       <Tab.Screen
-        name="Favorites"
-        component={FavoritesScreen}
-        options={{ tabBarLabel: 'Favoritas', title: 'Divisas favoritas' }}
+        name="Saved"
+        component={SavedScreen}
+        options={{
+          tabBarLabel: 'Guardadas',
+          title: 'Divisas guardadas',
+          // Badge en tiempo real: undefined oculta el círculo cuando no hay guardadas
+          tabBarBadge: savedCount > 0 ? savedCount : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: COLORS.primary,
+            color: COLORS.background,
+          },
+        }}
       />
     </Tab.Navigator>
   );

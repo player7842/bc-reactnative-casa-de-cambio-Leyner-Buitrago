@@ -4,8 +4,8 @@ import { Trend } from '../types';
 export type RootTabParamList = {
   // Pestaña principal: contiene el Stack interno (lista → detalle)
   Home: undefined;
-  // Pestaña secundaria
-  Favorites: undefined;
+  // Pestaña de divisas guardadas (viene del store Zustand)
+  Saved: undefined;
 };
 
 // Pantallas del Stack anidado dentro de la pestaña Home
