@@ -7,11 +7,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios"
   },
-  "dependencies": {
+    "dependencies": {
     "@expo/vector-icons": "15.0.2",
     "@react-navigation/bottom-tabs": "7.18.8",
     "@react-navigation/native": "7.3.8",
     "@react-navigation/native-stack": "7.17.10",
+    "@tanstack/react-query": "5.101.2",
+    "axios": "1.18.1",
     "expo": "58.0.17",
     "expo-status-bar": "58.0.4",
     "react": "19.3.0",
