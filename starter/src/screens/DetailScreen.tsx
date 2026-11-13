@@ -27,7 +27,7 @@ export function DetailScreen(): React.JSX.Element {
   const currency: Currency = { id, name, code, country, imageUri, buyRate, sellRate, trend };
 
   // Selectores del store: isSaved se recalcula cada vez que cambia la lista de guardadas
-  const isSaved = useSavedStore((state) => state.isItemSaved(id));
+  const isSaved = useSavedStore((state) => state.items.some((i) => i.id === id));
   const addItem = useSavedStore((state) => state.addItem);
   const removeItem = useSavedStore((state) => state.removeItem);
 

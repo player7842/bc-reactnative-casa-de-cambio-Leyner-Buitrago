@@ -28,7 +28,7 @@ export function formatCOP(value: number): string {
 
 export function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
   // Selectores específicos: la tarjeta solo se re-renderiza si cambia SU estado de guardado
-  const isSaved = useSavedStore((state) => state.isItemSaved(item.id));
+  const isSaved = useSavedStore((state) => state.items.some((i) => i.id === item.id));
   const addItem = useSavedStore((state) => state.addItem);
   const removeItem = useSavedStore((state) => state.removeItem);
 
