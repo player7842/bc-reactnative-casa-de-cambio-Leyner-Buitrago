@@ -1,10 +1,12 @@
 import React from 'react';
+import { Pressable } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
 import { HomeScreen } from '../screens/HomeScreen';
 import { DetailScreen } from '../screens/DetailScreen';
+import { CreateScreen } from '../screens/CreateScreen';
 import { SavedScreen } from '../screens/SavedScreen';
 import { useSavedStore } from '../stores/savedStore';
 import { COLORS, TYPOGRAPHY } from '../theme';
@@ -28,12 +30,30 @@ function HomeStackNavigator(): React.JSX.Element {
       <HomeStack.Screen
         name="HomeList"
         component={HomeScreen}
-        options={{ title: 'Casa de Cambio' }}
+        options={({ navigation }) => ({
+          title: 'Casa de Cambio',
+          // Botón + para abrir el formulario de creación
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('CreateCurrency')}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Agregar divisa"
+            >
+              <Ionicons name="add" size={28} color={COLORS.primary} />
+            </Pressable>
+          ),
+        })}
       />
       <HomeStack.Screen
         name="HomeDetail"
         component={DetailScreen}
         options={({ route }) => ({ title: route.params.name })}
+      />
+      <HomeStack.Screen
+        name="CreateCurrency"
+        component={CreateScreen}
+        options={{ title: 'Nueva divisa', presentation: 'modal' }}
       />
     </HomeStack.Navigator>
   );

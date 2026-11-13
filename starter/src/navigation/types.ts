@@ -2,9 +2,9 @@ import { Trend } from '../types';
 
 // Pestañas de nivel raíz (Tab Navigator)
 export type RootTabParamList = {
-  // Pestaña principal: contiene el Stack interno (lista → detalle)
+  // Pestaña principal: contiene el Stack interno (lista → detalle / crear)
   Home: undefined;
-  // Pestaña de divisas guardadas (viene del store Zustand)
+  // Pestaña de divisas guardadas (ids en el store Zustand)
   Saved: undefined;
 };
 
@@ -21,4 +21,6 @@ export type HomeStackParamList = {
     sellRate: number;
     trend: Trend;
   };
+  // Formulario para crear una divisa (POST con useMutation)
+  CreateCurrency: undefined;
 };
