@@ -6,7 +6,6 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 import { formatCOP } from '../components/ItemCard';
 import { useSavedStore } from '../stores/savedStore';
-import type { Currency } from '../types';
 import type { HomeStackParamList } from '../navigation/types';
 
 type DetailRouteProp = RouteProp<HomeStackParamList, 'HomeDetail'>;
@@ -23,11 +22,9 @@ export function DetailScreen(): React.JSX.Element {
   const navigation = useNavigation<DetailNavigationProp>();
   const { id, name, code, country, imageUri, buyRate, sellRate, trend } = route.params;
 
-  // Divisa completa armada con los params (es lo que se guarda en el store)
-  const currency: Currency = { id, name, code, country, imageUri, buyRate, sellRate, trend };
 
   // Selectores del store: isSaved se recalcula cada vez que cambia la lista de guardadas
-  const isSaved = useSavedStore((state) => state.items.some((i) => i.id === id));
+  const isSaved = useSavedStore((state) => state.savedIds.includes(id));
   const addItem = useSavedStore((state) => state.addItem);
   const removeItem = useSavedStore((state) => state.removeItem);
 
@@ -35,7 +32,7 @@ export function DetailScreen(): React.JSX.Element {
     if (isSaved) {
       removeItem(id);
     } else {
-      addItem(currency);
+      addItem(id);
     }
   }
 

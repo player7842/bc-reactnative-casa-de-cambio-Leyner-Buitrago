@@ -1,11 +1,16 @@
 import { create } from 'zustand';
-import type { Currency } from '../types';
+
+// ============================================
+// Store de divisas guardadas
+// ============================================
+// Solo guarda los IDS: es estado del CLIENTE (una preferencia del usuario).
+// Los datos de las divisas son estado del SERVIDOR y viven en TanStack Query.
 
 interface SavedStore {
-  // Lista de divisas guardadas
-  items: Currency[];
-  // Agrega una divisa (sin duplicados)
-  addItem: (item: Currency) => void;
+  // Ids de las divisas guardadas
+  savedIds: string[];
+  // Guarda una divisa por id (sin duplicados)
+  addItem: (id: string) => void;
   // Quita una divisa por id
   removeItem: (id: string) => void;
   // [Extra] Vacía la lista
@@ -15,21 +20,20 @@ interface SavedStore {
 }
 
 export const useSavedStore = create<SavedStore>((set, get) => ({
-  items: [],
+  savedIds: [],
 
-  addItem: (item) => {
-    const alreadySaved = get().items.some((i) => i.id === item.id);
-    if (alreadySaved) return;
-    set((state) => ({ items: [...state.items, item] }));
+  addItem: (id) => {
+    if (get().savedIds.includes(id)) return;
+    set((state) => ({ savedIds: [...state.savedIds, id] }));
   },
 
   removeItem: (id) => {
-    set((state) => ({ items: state.items.filter((i) => i.id !== id) }));
+    set((state) => ({ savedIds: state.savedIds.filter((savedId) => savedId !== id) }));
   },
 
   clearAll: () => {
-    set({ items: [] });
+    set({ savedIds: [] });
   },
 
-  isItemSaved: (id) => get().items.some((i) => i.id === id),
+  isItemSaved: (id) => get().savedIds.includes(id),
 }));

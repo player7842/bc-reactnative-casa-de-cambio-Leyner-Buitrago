@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,12 +6,14 @@ import {
   Pressable,
   FlatList,
   Alert,
+  ActivityIndicator,
   StyleSheet,
   ListRenderItem,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Currency } from '../types';
 import { useSavedStore } from '../stores/savedStore';
+import { useCurrencies } from '../hooks/useCurrencies';
 import { formatCOP } from '../components/ItemCard';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
 
@@ -47,10 +49,16 @@ function SavedRow({ item }: { item: Currency }): React.JSX.Element {
 const renderSaved: ListRenderItem<Currency> = ({ item }) => <SavedRow item={item} />;
 
 export function SavedScreen(): React.JSX.Element {
-  // Selectores específicos: la lista y la acción de vaciar
-  const items = useSavedStore((state) => state.items);
+  // Ids guardados (estado del cliente, Zustand) + divisas (estado del servidor, TanStack Query)
+  const savedIds = useSavedStore((state) => state.savedIds);
   const clearAll = useSavedStore((state) => state.clearAll);
-  
+  const { data, isLoading, isError } = useCurrencies();
+
+  const savedItems = useMemo<Currency[]>(
+    () => (data ?? []).filter((c) => savedIds.includes(c.id)),
+    [data, savedIds],
+  );
+
   // Pide confirmación antes de borrar todo
   function handleClearAll(): void {
     Alert.alert('Limpiar guardadas', '¿Quitar todas las divisas guardadas?', [
@@ -59,19 +67,36 @@ export function SavedScreen(): React.JSX.Element {
     ]);
   }
 
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
+  if (isError && data === undefined) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.emptyText}>No se pudieron cargar las divisas</Text>
+        <Text style={styles.emptySubText}>Revisa tu conexión e intenta desde la pestaña Divisas.</Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       style={styles.container}
-      data={items}
+      data={savedItems}
       keyExtractor={(item) => item.id}
       renderItem={renderSaved}
       ItemSeparatorComponent={ItemSeparator}
       contentContainerStyle={styles.list}
       ListHeaderComponent={
-        items.length > 0 ? (
+        savedItems.length > 0 ? (
           <View style={styles.headerRow}>
             <Text style={styles.headerText}>
-              {items.length} {items.length === 1 ? 'divisa guardada' : 'divisas guardadas'}
+              {savedItems.length} {savedItems.length === 1 ? 'divisa guardada' : 'divisas guardadas'}
             </Text>
             <Pressable
               onPress={handleClearAll}
@@ -98,6 +123,14 @@ export function SavedScreen(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.sm,
+    padding: SPACING.xxl,
+    backgroundColor: COLORS.background,
+  },
   list: { padding: SPACING.base, flexGrow: 1 },
   headerRow: {
     flexDirection: 'row',

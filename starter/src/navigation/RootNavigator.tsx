@@ -46,7 +46,7 @@ const Tab = createBottomTabNavigator<RootTabParamList>();
 
 export function RootNavigator(): React.JSX.Element {
   // Selector específico: solo se re-renderiza cuando cambia la CANTIDAD de guardadas
-  const savedCount = useSavedStore((state) => state.items.length);
+  const savedCount = useSavedStore((state) => state.savedIds.length);
 
   return (
     <Tab.Navigator
