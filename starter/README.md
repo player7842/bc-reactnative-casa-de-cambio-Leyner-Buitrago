@@ -1,4 +1,4 @@
-# Casa de Cambio — Semana 03 (React Navigation 7)
+# Casa de Cambio — Semana 04 (Estado global con Zustand)
 
 **Bootcamp:** bc-reactnative · **Dominio:** Casa de cambio
 **Entidades del dominio:** currencies, transactions, rates, clients
@@ -7,25 +7,27 @@
 ## Descripción del dominio
 
 Una casa de cambio compra y vende divisas. La app lista las divisas (currencies) con su precio de
-compra y de venta en pesos colombianos (COP), permite buscarlas y ver el detalle de cada una. Las tasas
-son ficticias. Las demás entidades (transactions, rates, clients) se agregarán en semanas futuras.
+compra y de venta en pesos colombianos (COP), permite buscarlas, ver su detalle y guardar las que
+interesan. Las tasas son ficticias.
 
-## Implementación
+## Implementación de la semana 4
 
-- **Tab Navigator** con dos pestañas: *Divisas* y *Favoritas*, con íconos de Ionicons que cambian
-  entre relleno y contorno según la pestaña activa, y color activo `#61DAFB`.
-- **Stack anidado** dentro de *Divisas*: lista (`HomeList`) → detalle (`HomeDetail`). La barra de
-  pestañas sigue visible en el detalle y el título del header es el nombre de la divisa.
-- **Params tipados:** `HomeDetail` recibe `id`, `name`, `code`, `country`, `imageUri`, `buyRate`,
-  `sellRate` y `trend`, definidos en `HomeStackParamList`. El detalle los lee con `useRoute`.
-- **Favoritas:** lista estática de 4 divisas.
-- TypeScript estricto, sin `any`.
+- **Store de Zustand** (`src/stores/savedStore.ts`) tipado con `create<SavedStore>()`: `items`,
+  `addItem` (sin duplicados), `removeItem`, `isItemSaved` y, como extra, `clearAll`.
+- **Selectores específicos:** cada componente lee solo lo que necesita, así que solo se re-renderiza
+  cuando cambia ese dato.
+- **Tarjeta y detalle:** un botón guarda o quita la divisa del store.
+- **Pestaña Guardadas:** lista lo que hay en el store, permite quitar divisas y limpiar todo con
+  confirmación.
+- **Badge en la pestaña Guardadas:** muestra la cantidad en tiempo real y se oculta cuando no hay
+  divisas guardadas.
+- Navegación de la semana 3 (Tab + Stack con params tipados) y TypeScript estricto, sin `any`.
 
 ## Capturas
 
-| Divisas | Detalle | Favoritas |
+| Divisas | Detalle | Guardadas |
 |---|---|---|
-| ![Divisas](screenshots/semana-03-home.png) | ![Detalle](screenshots/semana-03-detail.png) | ![Favoritas](screenshots/semana-03-favorites.png) |
+| ![Divisas](screenshots/semana-04-home.png) | ![Detalle](screenshots/semana-04-detail.png) | ![Guardadas](screenshots/semana-04-saved.png) |
 
 ## Cómo ejecutar
 
