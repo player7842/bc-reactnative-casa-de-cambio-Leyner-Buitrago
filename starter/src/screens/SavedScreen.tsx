@@ -1,5 +1,14 @@
 import React from 'react';
-import { View, Text, Image, Pressable, FlatList, StyleSheet, ListRenderItem } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  Pressable,
+  FlatList,
+  Alert,
+  StyleSheet,
+  ListRenderItem,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Currency } from '../types';
 import { useSavedStore } from '../stores/savedStore';
@@ -41,6 +50,14 @@ export function SavedScreen(): React.JSX.Element {
   // Selectores específicos: la lista y la acción de vaciar
   const items = useSavedStore((state) => state.items);
   const clearAll = useSavedStore((state) => state.clearAll);
+  
+  // Pide confirmación antes de borrar todo
+  function handleClearAll(): void {
+    Alert.alert('Limpiar guardadas', '¿Quitar todas las divisas guardadas?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Quitar todas', style: 'destructive', onPress: clearAll },
+    ]);
+  }
 
   return (
     <FlatList
@@ -56,7 +73,12 @@ export function SavedScreen(): React.JSX.Element {
             <Text style={styles.headerText}>
               {items.length} {items.length === 1 ? 'divisa guardada' : 'divisas guardadas'}
             </Text>
-            <Pressable onPress={clearAll} hitSlop={8}>
+            <Pressable
+              onPress={handleClearAll}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Limpiar todas las divisas guardadas"
+            >
               <Text style={styles.clearText}>Limpiar todo</Text>
             </Pressable>
           </View>
