@@ -10,3 +10,6 @@ export interface Currency {
   sellRate: number;
   trend: Trend;
 }
+
+// Lo que se envía en el POST: la divisa sin `id` (lo asigna el servidor)
+export type CreateCurrencyPayload = Omit<Currency, 'id'>;
