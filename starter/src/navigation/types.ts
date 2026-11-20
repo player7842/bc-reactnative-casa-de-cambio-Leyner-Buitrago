@@ -23,4 +23,6 @@ export type HomeStackParamList = {
   };
   // Formulario para crear una divisa (POST con useMutation)
   CreateCurrency: undefined;
+  // Formulario para editar una divisa (PUT con useMutation)
+  EditCurrency: { id: string; name: string };
 };

@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { HomeScreen } from '../screens/HomeScreen';
 import { DetailScreen } from '../screens/DetailScreen';
 import { CreateScreen } from '../screens/CreateScreen';
+import { EditScreen } from '../screens/EditScreen';
 import { SavedScreen } from '../screens/SavedScreen';
 import { useSavedStore } from '../stores/savedStore';
 import { COLORS, TYPOGRAPHY } from '../theme';
@@ -54,6 +55,11 @@ function HomeStackNavigator(): React.JSX.Element {
         name="CreateCurrency"
         component={CreateScreen}
         options={{ title: 'Nueva divisa', presentation: 'modal' }}
+      />
+      <HomeStack.Screen
+        name="EditCurrency"
+        component={EditScreen}
+        options={{ title: 'Editar divisa', presentation: 'modal' }}
       />
     </HomeStack.Navigator>
   );

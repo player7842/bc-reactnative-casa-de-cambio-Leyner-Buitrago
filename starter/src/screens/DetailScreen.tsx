@@ -85,6 +85,14 @@ export function DetailScreen(): React.JSX.Element {
 
       <Pressable
         style={({ pressed }) => [styles.backButton, pressed && styles.buttonPressed]}
+        onPress={() => navigation.navigate('EditCurrency', { id, name })}
+        accessibilityRole="button"
+      >
+        <Text style={styles.backButtonText}>Editar divisa</Text>
+      </Pressable>
+
+      <Pressable
+        style={({ pressed }) => [styles.backButton, pressed && styles.buttonPressed]}
         onPress={() => navigation.goBack()}
       >
         <Text style={styles.backButtonText}>← Volver a la lista</Text>
