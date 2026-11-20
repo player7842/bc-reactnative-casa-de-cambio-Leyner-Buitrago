@@ -1,4 +1,4 @@
-# Casa de Cambio — Semana 05 (Networking con Axios y TanStack Query)
+# Casa de Cambio — Semana 06 (Formularios con React Hook Form y Zod)
 
 **Bootcamp:** bc-reactnative · **Dominio:** Casa de cambio
 **Entidades del dominio:** currencies, transactions, rates, clients
@@ -6,36 +6,40 @@
 
 ## Descripción del dominio
 
-Una casa de cambio compra y vende divisas. La app consume una API REST propia (MockAPI, recurso
-`currencies`) para listar las divisas con su precio de compra y de venta en pesos colombianos (COP),
-buscarlas, ver su detalle, guardarlas y crear divisas nuevas.
+Una casa de cambio compra y vende divisas. En esta semana la app suma formularios validados para
+**crear** y **editar** una divisa (nombre, código, país, bandera y precios de compra y venta) conectados
+a la API de la semana 5.
 
-## API utilizada
+## Implementación de la semana 6
 
-- **MockAPI**, con el recurso `currencies` (campos: `name`, `code`, `country`, `imageUri`,
-  `buyRate`, `sellRate`, `trend`).
-- Endpoints: `GET /currencies` y `POST /currencies`.
+- **Schema Zod** (`src/schemas/currencySchema.ts`) adaptado al dominio y con mensajes de error en español.
+- **Tipos inferidos del schema:** `z.input` (lo que escribe el usuario) y `z.infer` (lo ya validado). No
+  hay una interfaz manual duplicada.
+- **`FormField` genérico y reutilizable** (`src/components/FormField.tsx`): encapsula `Controller` +
+  `TextInput` + mensaje de error, tipado con genéricos de React Hook Form, sin `any`.
+- **`CreateScreen`:** `useForm` + `zodResolver`; al enviar, el POST se hace con `useCreateCurrency` y la
+  pantalla vuelve atrás en `onSuccess`. El botón se deshabilita con spinner mientras se envía.
+- **`EditScreen`:** carga la divisa del servidor con `useCurrencyById` y rellena el formulario con
+  `reset()` dentro de un `useEffect`; guarda con `useUpdateCurrency` (PUT). El botón solo se habilita si
+  hubo cambios (`isDirty`).
+- La invalidación de `['currencies']` actualiza la lista y también cada divisa individual.
 
-## Implementación de la semana 5
+## Reglas de validación
 
-- **Instancia de Axios** en `src/services/api.ts`, con `baseURL`, `timeout`, headers y un interceptor
-  de respuesta que registra los errores en desarrollo.
-- **`QueryClientProvider`** en `App.tsx`, con una sola instancia de `QueryClient`.
-- **`useCurrencies`** (`useQuery`) con la queryKey semántica `['currencies']`.
-- **Estados de red en la lista:** `ActivityIndicator` mientras carga, mensaje con botón *Reintentar* si
-  hay error y estado vacío con `ListEmptyComponent`.
-- **Pull-to-refresh** con `refetch` y `isRefetching`.
-- **`useCreateCurrency`** (`useMutation`): hace el POST e invalida `['currencies']` en `onSuccess`, así la
-  lista se actualiza sola, sin recargar la app.
-- **Estado del servidor vs. estado del cliente:** las divisas viven en TanStack Query; Zustand solo guarda
-  los **ids** de las divisas guardadas. La pestaña Guardadas cruza ambos.
-- TypeScript estricto, sin `any`.
+| Campo | Regla |
+|---|---|
+| Nombre | 2 a 40 caracteres |
+| Código | exactamente 3 letras (formato ISO 4217: USD, EUR…) |
+| País o región | 2 a 40 caracteres |
+| Bandera | 2 letras, o vacío para usar la bandera por defecto |
+| Precio de compra | número mayor que 0 (`z.coerce.number()`) |
+| Precio de venta | número mayor que 0 y no menor al precio de compra |
 
 ## Capturas
 
-| Lista | Crear divisa | Estado vacío |
+| Errores de validación | Editar divisa | Lista actualizada |
 |---|---|---|
-| ![Lista](screenshots/semana-05-lista.png) | ![Crear](screenshots/semana-05-crear.png) | ![Vacío](screenshots/semana-05-vacio.png) |
+| ![Errores](screenshots/semana-06-errores.png) | ![Editar](screenshots/semana-06-editar.png) | ![Lista](screenshots/semana-06-lista.png) |
 
 ## Cómo ejecutar
 
