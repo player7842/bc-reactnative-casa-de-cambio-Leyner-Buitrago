@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  View,
   Text,
-  TextInput,
   Pressable,
   ScrollView,
   ActivityIndicator,
@@ -10,81 +8,50 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  TextInputProps,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormField } from '../components/FormField';
+import { currencySchema } from '../schemas/currencySchema';
+import type { CurrencyFormData, CurrencyFormInput } from '../schemas/currencySchema';
 import { useCreateCurrency } from '../hooks/useCurrencies';
+import { formToPayload } from '../utils/currencyForm';
 import { COLORS, TYPOGRAPHY, SPACING, RADIUS } from '../theme';
-import type { CreateCurrencyPayload } from '../types';
 import type { HomeStackParamList } from '../navigation/types';
 
 type CreateNavigationProp = NativeStackNavigationProp<HomeStackParamList, 'CreateCurrency'>;
-
-interface FieldProps extends TextInputProps {
-  label: string;
-}
-
-/** Campo de formulario: etiqueta + input con el estilo del tema */
-function Field({ label, ...inputProps }: FieldProps): React.JSX.Element {
-  return (
-    <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={COLORS.textMuted}
-        autoCorrect={false}
-        {...inputProps}
-      />
-    </View>
-  );
-}
-
-/** Convierte "3.910,5" o "3910.5" en número; devuelve NaN si no es válido */
-function parseRate(text: string): number {
-  return Number(text.trim().replace(',', '.'));
-}
 
 export function CreateScreen(): React.JSX.Element {
   const navigation = useNavigation<CreateNavigationProp>();
   const { mutate, isPending } = useCreateCurrency();
 
-  const [name, setName] = useState<string>('');
-  const [code, setCode] = useState<string>('');
-  const [country, setCountry] = useState<string>('');
-  const [flagIso, setFlagIso] = useState<string>('');
-  const [buyRate, setBuyRate] = useState<string>('');
-  const [sellRate, setSellRate] = useState<string>('');
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<CurrencyFormInput, unknown, CurrencyFormData>({
+    resolver: zodResolver(currencySchema),
+    defaultValues: {
+      name: '',
+      code: '',
+      country: '',
+      flagIso: '',
+      buyRate: '',
+      sellRate: '',
+    },
+  });
 
-  const buy = parseRate(buyRate);
-  const sell = parseRate(sellRate);
-  const canSubmit =
-    name.trim() !== '' &&
-    code.trim() !== '' &&
-    country.trim() !== '' &&
-    Number.isFinite(buy) &&
-    buy > 0 &&
-    Number.isFinite(sell) &&
-    sell > 0;
-
-  function handleSubmit(): void {
-    const iso = flagIso.trim().toLowerCase();
-    const payload: CreateCurrencyPayload = {
-      name: name.trim(),
-      code: code.trim().toUpperCase(),
-      country: country.trim(),
-      imageUri: `https://flagcdn.com/w160/${iso === '' ? 'un' : iso}.png`,
-      buyRate: buy,
-      sellRate: sell,
-      trend: 'estable',
-    };
-
-    mutate(payload, {
-      // La invalidación de la lista ocurre en el onSuccess del hook; aquí solo cerramos
+  // Solo se ejecuta si el formulario pasó la validación de Zod: `data` ya viene tipado y convertido
+  function onSubmit(data: CurrencyFormData): void {
+    mutate(formToPayload(data), {
       onSuccess: () => navigation.goBack(),
       onError: (error) => Alert.alert('No se pudo crear la divisa', error.message),
     });
   }
+
+  const isBusy = isSubmitting || isPending;
 
   return (
     <KeyboardAvoidingView
@@ -92,60 +59,68 @@ export function CreateScreen(): React.JSX.Element {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Field
+        <FormField
+          control={control}
+          name="name"
           label="Nombre de la divisa"
           placeholder="Ej. Dólar australiano"
-          value={name}
-          onChangeText={setName}
+          errorMessage={errors.name?.message}
         />
-        <Field
+        <FormField
+          control={control}
+          name="code"
           label="Código"
           placeholder="Ej. AUD"
-          value={code}
-          onChangeText={setCode}
           autoCapitalize="characters"
-          maxLength={4}
+          maxLength={3}
+          errorMessage={errors.code?.message}
         />
-        <Field
+        <FormField
+          control={control}
+          name="country"
           label="País o región"
           placeholder="Ej. Australia"
-          value={country}
-          onChangeText={setCountry}
+          errorMessage={errors.country?.message}
         />
-        <Field
+        <FormField
+          control={control}
+          name="flagIso"
           label="Código del país para la bandera (2 letras)"
           placeholder="Ej. au"
-          value={flagIso}
-          onChangeText={setFlagIso}
           autoCapitalize="none"
           maxLength={2}
+          errorMessage={errors.flagIso?.message}
         />
-        <Field
+        <FormField
+          control={control}
+          name="buyRate"
           label="Precio de compra (COP)"
           placeholder="Ej. 2500"
-          value={buyRate}
-          onChangeText={setBuyRate}
           keyboardType="decimal-pad"
+          errorMessage={errors.buyRate?.message}
         />
-        <Field
+        <FormField
+          control={control}
+          name="sellRate"
           label="Precio de venta (COP)"
           placeholder="Ej. 2600"
-          value={sellRate}
-          onChangeText={setSellRate}
           keyboardType="decimal-pad"
+          errorMessage={errors.sellRate?.message}
         />
 
         <Pressable
           style={({ pressed }) => [
             styles.submitButton,
-            (!canSubmit || isPending) && styles.submitButtonDisabled,
+            isBusy && styles.submitButtonDisabled,
             pressed && styles.submitButtonPressed,
           ]}
-          onPress={handleSubmit}
-          disabled={!canSubmit || isPending}
+          onPress={() => {
+            void handleSubmit(onSubmit)();
+          }}
+          disabled={isBusy}
           accessibilityRole="button"
         >
-          {isPending ? (
+          {isBusy ? (
             <ActivityIndicator color={COLORS.background} />
           ) : (
             <Text style={styles.submitText}>Crear divisa</Text>
@@ -158,23 +133,7 @@ export function CreateScreen(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
-  content: { padding: SPACING.base, gap: SPACING.md },
-  field: { gap: SPACING.xs },
-  label: {
-    fontSize: TYPOGRAPHY.size.sm,
-    fontWeight: TYPOGRAPHY.weight.medium,
-    color: COLORS.textSecondary,
-  },
-  input: {
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: RADIUS.md,
-    paddingHorizontal: SPACING.base,
-    paddingVertical: Platform.OS === 'ios' ? 12 : 10,
-    color: COLORS.textPrimary,
-    fontSize: TYPOGRAPHY.size.base,
-  },
+  content: { padding: SPACING.base, gap: SPACING.xs },
   submitButton: {
     marginTop: SPACING.md,
     alignItems: 'center',
