@@ -11,6 +11,9 @@
     },
     "android": {
       "package": "com.bootcamp.casadecambio"
-    }
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }
